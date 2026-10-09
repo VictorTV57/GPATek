@@ -7,6 +7,7 @@
   window.__gpaTekContent = true;
 
   const G = globalThis.GpaTek;
+  const I18n = globalThis.GpaTekI18n;
   const UI = globalThis.GpaTekUI;
   const store = globalThis.GpaTekStore;
 
@@ -57,6 +58,19 @@
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
+  // ---------- language ----------
+  // my.epitech.eu sets <html lang> to its display language; the popup setting can override it.
+  let storedSiteLang = null;
+
+  function applyLanguage() {
+    const siteLang = I18n.normalize(document.documentElement.lang);
+    if (siteLang && siteLang !== storedSiteLang) {
+      storedSiteLang = siteLang;
+      store.set({ siteLang }); // lets the popup follow the site in auto mode
+    }
+    I18n.setLang(I18n.resolve(state.settings.language, siteLang));
+  }
+
   // ---------- computation ----------
   function summaryOf(r) {
     return {
@@ -73,6 +87,7 @@
   }
 
   function recompute() {
+    applyLanguage();
     if (!state.validations) return;
     state.result = G.computeGpa(state.validations, state.profile, state.settings);
     store.set({ summary: summaryOf(state.result) });
@@ -108,6 +123,13 @@
     state.settings = { ...G.DEFAULT_SETTINGS, ...(v.settings || {}) };
     recompute();
   });
+
+  // Switching the language in the site's settings changes <html lang> without reloading the page.
+  new MutationObserver(() => {
+    const before = I18n.lang;
+    applyLanguage();
+    if (I18n.lang !== before) recompute();
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && state.panelOpen) closePanel(); });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe, { once: true });
