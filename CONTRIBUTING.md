@@ -28,7 +28,9 @@ For a security vulnerability, do not open a public issue: use
 
 ## Local setup
 
-Requirements: Chrome or Edge, Git, and Node.js 18+ (only for the tests; there are no npm dependencies).
+Requirements: a Chromium-based browser (Chrome, Edge, Brave, Opera…) or Firefox 128+, Git, and
+Node.js 18+ (only for the tests; there are no npm dependencies). Changes to the content scripts or the
+manifest should be checked on both a Chromium browser and Firefox.
 
 ```sh
 git clone git@github.com:VictorTV57/GPATek.git
@@ -38,11 +40,14 @@ npm test
 
 Then load the extension:
 
-1. `chrome://extensions` → turn on **Developer mode**.
-2. **Load unpacked** → pick the `src/` folder.
-3. Open my.epitech.eu → **Détails académiques → Compétences**.
+1. Chromium: `chrome://extensions` → turn on **Developer mode** → **Load unpacked** → pick the `src/`
+   folder.
+   Firefox: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on…** → pick
+   `src/manifest.json`.
+2. Open my.epitech.eu → **Détails académiques → Compétences**.
 
-After each change: click ⟳ on the extension card, then reload the page.
+After each change: reload the extension (⟳ on Chromium, **Reload** in `about:debugging` on Firefox),
+then reload the page.
 
 ## Branches
 
@@ -242,8 +247,11 @@ several unrelated changes.
    `package.json` (`chore: bump version to x.y.z`), PR into `dev`.
 2. Open a PR from `dev` into `main` titled `release: vx.y.z`, merged with a **merge commit**
    (not squash) to keep the history.
-3. On `main`: `npm test`, then `npm run pack` → `dist/gpa-tek-<version>.zip`.
-4. Tag and publish: `gh release create vx.y.z dist/gpa-tek-x.y.z.zip --generate-notes`.
+3. On `main`: `npm test`, then `npm run pack` → `dist/gpa-tek-<version>-chromium.zip` and
+   `dist/gpa-tek-<version>-firefox.zip`.
+4. Tag and publish:
+   `gh release create vx.y.z dist/gpa-tek-x.y.z-chromium.zip dist/gpa-tek-x.y.z-firefox.zip --generate-notes`.
+5. Firefox: upload the `-firefox.zip` to addons.mozilla.org to get it signed.
 
 The signing private key (`keys/*.pem`) is **never** committed.
 
