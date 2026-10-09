@@ -2,7 +2,7 @@
   "name": "gpa-tek",
   "version": "1.0.0",
   "private": true,
-  "description": "Chrome extension that estimates your GPA (/4) on my.epitech.eu from your skill XP.",
+  "description": "Browser extension (Chromium and Firefox) that estimates your GPA (/4) on my.epitech.eu from your skill XP.",
   "license": "MIT",
   "scripts": {
     "test": "node --test",
