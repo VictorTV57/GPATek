@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GPATek",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Estime ton GPA /4 sur my.epitech.eu à partir de l'XP de tes compétences. Estimation non officielle, non affiliée à Epitech.",
   "permissions": ["storage"],
   "browser_specific_settings": {
@@ -28,6 +28,7 @@
       "matches": ["https://my.epitech.eu/*"],
       "js": [
         "lib/gpa.js",
+        "lib/i18n.js",
         "lib/storage.js",
         "content/ui/styles.js",
         "content/ui/dom.js",

@@ -5,6 +5,7 @@
   const DEFAULT_SETTINGS = Object.freeze({
     mode: 'letters',          // 'letters' (default) | 'linear'
     countInProgress: false,   // count enrolled modules still under 100 XP as a fail (0)
+    language: 'auto',         // 'auto' (follow my.epitech.eu) | 'fr' | 'en'
   });
 
   const XP_FOR_CREDITS = 100; // referent: 100 XP average gives the unit's credits
@@ -62,6 +63,7 @@
       totalCount: Number(block.totalCount) || 0,
       outcomes: (block.learningOutcomes || []).map((o) => ({
         title: o.titleFr || o.title || '',
+        titleEn: o.title || '',
         score: Number(o.score) || 0,
         level: Number(o.level) || 0,
         isMaxLevel: Boolean(o.isMaxLevel),
@@ -113,9 +115,9 @@
     };
   }
 
-  function formatPoints(value, digits = 2) {
+  function formatPoints(value, digits = 2, decimal = ',') {
     if (value == null || !Number.isFinite(value)) return '—';
-    return value.toFixed(digits).replace('.', ',');
+    return value.toFixed(digits).replace('.', decimal);
   }
 
   const api = { DEFAULT_SETTINGS, XP_FOR_CREDITS, XP_MAX, letterFor, officialPoints, estimatePoints, evaluateModule, computeGpa, formatPoints };
