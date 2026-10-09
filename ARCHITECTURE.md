@@ -62,6 +62,22 @@ Pure functions, no DOM, no network, exposed on `globalThis.GpaTek` (browser) and
 
 **Every calculation rule lives here and must be covered by `tests/gpa.test.js`.**
 
+### `src/lib/i18n.js` — languages
+
+French and English dictionaries, exposed on `globalThis.GpaTekI18n` (and `module.exports` for the
+tests). `t(key, vars)` returns the text in the current language and fills `{placeholders}`;
+`points(value)` formats GPA points with the right decimal separator (`3,25` / `3.25`).
+
+The language is chosen by `resolve(setting, ...detected)`: a language forced in the popup wins,
+otherwise (`auto`) the first known language among the detected ones, otherwise French.
+
+- **Page**: `main.js` reads `<html lang>`, which my.epitech.eu sets to its display language, and
+  watches it with a `MutationObserver`: switching the language in the site's settings redraws the
+  badges, the column and the panel without a reload. Module and skill titles use the API's `title`
+  (English) or `titleFr` (French).
+- **Popup**: it cannot see the page, so the content script stores the last site language
+  (`siteLang`); the popup uses it in auto mode, then falls back to the browser language.
+
 ### `src/lib/storage.js` — storage
 
 A small wrapper around `chrome.storage.local` (`get`, `set`, `clear`, `onChange`) that does not crash
@@ -69,8 +85,9 @@ when `chrome` is missing (previews, tests). Keys in use:
 
 | Key | Written by | Read by | Content |
 | --- | --- | --- | --- |
-| `settings` | popup | content, popup | `{ mode: 'letters' \| 'linear', countInProgress: boolean }` |
+| `settings` | popup | content, popup | `{ mode: 'letters' \| 'linear', countInProgress: boolean, language: 'auto' \| 'fr' \| 'en' }` |
 | `summary` | content | popup | Latest result (GPA, credits, modules, `updatedAt`) |
+| `siteLang` | content | popup | Last language seen on my.epitech.eu: `'fr'` or `'en'` |
 
 ### `src/content/inject.js` — capture
 
@@ -135,6 +152,7 @@ its labels, badges silently disappear (rendering fails quietly, with a `console.
 | Read another API route | `content/inject.js` (`ROUTES`) and the `message` handler in `content/main.js` |
 | Show a new element in the page | New file in `content/ui/`, add it to `manifest.json`, call it from `render()` |
 | Change the look | `content/ui/styles.js` (page) or `popup/popup.css` |
+| Add or change a text | `lib/i18n.js` (both `fr` and `en`), then `t('key')` in the UI (`data-i18n="key"` in `popup.html`) |
 
 ## Debugging
 
