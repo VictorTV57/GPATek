@@ -36,6 +36,11 @@
     scheduled = false;
     if (!state.result) return;
     if (observer) observer.disconnect();
+    // Switching the language on the site redraws its page, which brings us here: redraw ours too.
+    if (languageChanged()) {
+      clearInjected();
+      if (state.panelOpen) openPanel();
+    }
     try {
       UI.renderStat(state.result, state.profile, openPanel);
       UI.renderBadges(state.result);
@@ -59,16 +64,29 @@
   }
 
   // ---------- language ----------
-  // my.epitech.eu sets <html lang> to its display language; the popup setting can override it.
+  // my.epitech.eu (i18next) saves the language picked in its settings under this localStorage key.
+  // Its <html lang> stays "en" whatever the language, so it can't be used.
+  // Only this key is read; the popup setting can override it.
+  const SITE_LANG_KEY = 'i18nextLng';
   let storedSiteLang = null;
 
+  function readSiteLang() {
+    try { return I18n.normalize(localStorage.getItem(SITE_LANG_KEY)); } catch (_) { return null; }
+  }
+
   function applyLanguage() {
-    const siteLang = I18n.normalize(document.documentElement.lang);
+    const siteLang = readSiteLang();
     if (siteLang && siteLang !== storedSiteLang) {
       storedSiteLang = siteLang;
       store.set({ siteLang }); // lets the popup follow the site in auto mode
     }
-    I18n.setLang(I18n.resolve(state.settings.language, siteLang));
+    I18n.setLang(I18n.resolve(state.settings.language, siteLang, navigator.language));
+  }
+
+  function languageChanged() {
+    const before = I18n.lang;
+    applyLanguage();
+    return I18n.lang !== before;
   }
 
   // ---------- computation ----------
@@ -124,12 +142,10 @@
     recompute();
   });
 
-  // Switching the language in the site's settings changes <html lang> without reloading the page.
-  new MutationObserver(() => {
-    const before = I18n.lang;
-    applyLanguage();
-    if (I18n.lang !== before) recompute();
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  // Language changed in another my.epitech.eu tab.
+  window.addEventListener('storage', (e) => {
+    if (e.key === SITE_LANG_KEY && languageChanged()) recompute();
+  });
 
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && state.panelOpen) closePanel(); });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe, { once: true });

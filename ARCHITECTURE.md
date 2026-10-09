@@ -71,10 +71,13 @@ tests). `t(key, vars)` returns the text in the current language and fills `{plac
 The language is chosen by `resolve(setting, ...detected)`: a language forced in the popup wins,
 otherwise (`auto`) the first known language among the detected ones, otherwise French.
 
-- **Page**: `main.js` reads `<html lang>`, which my.epitech.eu sets to its display language, and
-  watches it with a `MutationObserver`: switching the language in the site's settings redraws the
-  badges, the column and the panel without a reload. Module and skill titles use the API's `title`
-  (English) or `titleFr` (French).
+- **Page**: my.epitech.eu uses i18next, which saves the language picked in its settings in
+  `localStorage.i18nextLng` (`fr` / `en`). `main.js` reads **only that key**, then falls back to the
+  browser language. (`<html lang>` cannot be used: the site leaves it at `en` whatever the language.)
+  Switching the language redraws the site's page, which triggers our render loop: `render()` checks
+  the language again and redraws the badges, the column and the panel without a reload. A `storage`
+  event covers a change made in another tab. Module and skill titles use the API's `title` (English)
+  or `titleFr` (French).
 - **Popup**: it cannot see the page, so the content script stores the last site language
   (`siteLang`); the popup uses it in auto mode, then falls back to the browser language.
 

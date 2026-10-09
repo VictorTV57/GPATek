@@ -62,6 +62,8 @@ signed through AMO. After changing the code: click **Reload** on the add-on in `
 
 - The extension only reads the responses of `/api/evaluations/validations/me` and `/api/students/profile`
   that the page already receives. It sends no request and never reads or stores any token.
+- To follow the site language, it reads a single key of the site's local storage, `i18nextLng`
+  (`fr` or `en`), and nothing else.
 - Only your settings and the latest summary are kept, in the browser's local storage.
 - Permissions: `storage` only, scripts restricted to `https://my.epitech.eu/*`.
 
