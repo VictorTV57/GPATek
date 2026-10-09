@@ -107,6 +107,13 @@ is therefore an IIFE that registers itself on a global namespace (`GpaTek`, `Gpa
 `GpaTekUI`). **The order in `manifest.json` matters**: `lib/` first, then `ui/styles.js` and
 `ui/dom.js`, then the rest of `ui/`, and `main.js` last.
 
+**One manifest for every browser.** The extension uses nothing that differs between engines: no
+background script, and only `chrome.storage`, which Firefox also exposes under `chrome.*` with
+callbacks. `browser_specific_settings.gecko` holds the Firefox ID, the data-collection declaration that
+addons.mozilla.org requires, and the minimum version: 128, the first Firefox that runs a content
+script declared with `"world": "MAIN"`. Chromium-based browsers ignore that key, and `scripts/pack.ps1`
+removes it from the Chromium package so Chrome doesn't warn about an unrecognized key.
+
 **Shadow DOM everywhere.** Everything injected lives in a shadow root: the site's CSS cannot reach us
 and ours cannot leak onto the site.
 

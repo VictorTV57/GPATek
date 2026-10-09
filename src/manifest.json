@@ -4,6 +4,13 @@
   "version": "1.0.0",
   "description": "Estime ton GPA /4 sur my.epitech.eu à partir de l'XP de tes compétences. Estimation non officielle, non affiliée à Epitech.",
   "permissions": ["storage"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "gpa-tek@victorjost",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  },
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "GPATek",

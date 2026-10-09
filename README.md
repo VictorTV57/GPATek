@@ -1,17 +1,42 @@
 # GPATek
 
-Chrome / Edge extension that estimates your GPA (/4) on my.epitech.eu from your skill XP, styled like
+Browser extension that estimates your GPA (/4) on my.epitech.eu from your skill XP, styled like
 the site. Unofficial estimate, not affiliated with Epitech.
+
+Works on Chromium-based browsers (Chrome, Edge, Brave, Opera / Opera GX, Vivaldi, Arc, Comet…) and on
+Firefox-based browsers (Firefox 128+, Zen, LibreWolf, Floorp…), from the same `src/` folder.
 
 ## Installation (developer mode)
 
-1. Get the `src/` folder (clone the repository, or unzip a release into a folder you keep).
-2. Open `chrome://extensions` (or `edge://extensions`).
-3. Turn on **Developer mode** (top right).
-4. Click **Load unpacked** and pick the `src/` folder.
-5. Reload my.epitech.eu, then open **Détails académiques → Compétences**.
+Get the `src/` folder first: clone the repository, or unzip a release into a folder you keep.
+
+### Chromium-based browsers
+
+1. Open the extensions page:
+
+   | Browser | Address |
+   |---|---|
+   | Chrome, Comet, Arc | `chrome://extensions` |
+   | Edge | `edge://extensions` |
+   | Brave | `brave://extensions` |
+   | Opera, Opera GX | `opera://extensions` |
+   | Vivaldi | `vivaldi://extensions` |
+
+2. Turn on **Developer mode**.
+3. Click **Load unpacked** and pick the `src/` folder.
+4. Reload my.epitech.eu, then open **Détails académiques → Compétences**.
 
 After changing the code: click ⟳ on the extension card, then reload the page.
+
+### Firefox-based browsers (Firefox, Zen…)
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on…** and pick `src/manifest.json`.
+3. Reload my.epitech.eu, then open **Détails académiques → Compétences**.
+
+A temporary add-on is removed when the browser closes. To keep it installed, use the signed version
+from addons.mozilla.org once it is published, or build `dist/gpa-tek-<version>-firefox.zip` and have it
+signed through AMO. After changing the code: click **Reload** on the add-on in `about:debugging`.
 
 ## What you get
 
@@ -41,8 +66,8 @@ After changing the code: click ⟳ on the extension card, then reload the page.
 ## Repository layout
 
 ```
-src/                      Extension (folder to load in Chrome)
-├── manifest.json         Manifest V3 declaration
+src/                      Extension (folder to load in the browser)
+├── manifest.json         Manifest V3 declaration (shared by Chromium and Firefox)
 ├── icons/
 ├── lib/
 │   ├── gpa.js            Pure calculation (no DOM, no network), tested with Node
@@ -59,7 +84,7 @@ src/                      Extension (folder to load in Chrome)
 │       └── panel.js      Per-unit detail panel
 └── popup/                Popup: summary and settings
 tests/                    Calculation tests (node:test)
-scripts/pack.ps1          Builds dist/gpa-tek-<version>.zip
+scripts/pack.ps1          Builds dist/gpa-tek-<version>-{chromium,firefox}.zip
 ```
 
 Content scripts cannot be ES modules: each file in `content/ui/` is a classic script that registers
@@ -70,7 +95,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
 
 ```sh
 npm test       # calculation tests (Node ≥ 18, no dependencies)
-npm run pack   # zip src/ into dist/ for a release
+npm run pack   # zip src/ into dist/: one package for Chromium, one for Firefox
 ```
 
 `dist/` (built packages) and `keys/` (private `.pem` key used to sign the `.crx`) are never committed.
