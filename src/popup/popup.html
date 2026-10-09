@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>GPATek</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="tile">GPA</div>
+    <div>
+      <h1>GPATek</h1>
+      <p class="muted" id="sub">Ouvre « Ma scolarité » sur my.epitech.eu</p>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="label">GPA estimé</span>
+    <div class="big"><span id="est">—</span><small>/4</small></div>
+    <div class="bar"><i id="bar"></i></div>
+  </section>
+
+  <section class="facts">
+    <div><b id="off">—</b><span id="offLabel">Officiel</span></div>
+    <div><b id="added">—</b><span>Crédits estimés</span></div>
+    <div><b id="pess">—</b><span>Si tout finit ainsi</span></div>
+  </section>
+
+  <hr>
+
+  <section class="settings">
+    <label class="field">
+      <span class="label">Mode de calcul</span>
+      <select id="mode">
+        <option value="letters">Lettres — 1 point par 100 XP (A ≥ 400)</option>
+        <option value="linear">Linéaire — 4 × XP / 500</option>
+      </select>
+    </label>
+    <label class="check">
+      <input type="checkbox" id="countInProgress">
+      <span>Compter les UE sous 100 XP comme un échec</span>
+    </label>
+  </section>
+
+  <footer>
+    <button id="clear" type="button">Effacer mes données</button>
+    <span class="note">Estimation non officielle · non affilié à Epitech</span>
+  </footer>
+
+  <script src="../lib/gpa.js"></script>
+  <script src="../lib/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
