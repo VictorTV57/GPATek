@@ -7,6 +7,7 @@
   window.__gpaTekContent = true;
 
   const G = globalThis.GpaTek;
+  const I18n = globalThis.GpaTekI18n;
   const UI = globalThis.GpaTekUI;
   const store = globalThis.GpaTekStore;
 
@@ -35,6 +36,11 @@
     scheduled = false;
     if (!state.result) return;
     if (observer) observer.disconnect();
+    // Switching the language on the site redraws its page, which brings us here: redraw ours too.
+    if (languageChanged()) {
+      clearInjected();
+      if (state.panelOpen) openPanel();
+    }
     try {
       UI.renderStat(state.result, state.profile, openPanel);
       UI.renderBadges(state.result);
@@ -57,6 +63,32 @@
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
+  // ---------- language ----------
+  // my.epitech.eu (i18next) saves the language picked in its settings under this localStorage key.
+  // Its <html lang> stays "en" whatever the language, so it can't be used.
+  // Only this key is read; the popup setting can override it.
+  const SITE_LANG_KEY = 'i18nextLng';
+  let storedSiteLang = null;
+
+  function readSiteLang() {
+    try { return I18n.normalize(localStorage.getItem(SITE_LANG_KEY)); } catch (_) { return null; }
+  }
+
+  function applyLanguage() {
+    const siteLang = readSiteLang();
+    if (siteLang && siteLang !== storedSiteLang) {
+      storedSiteLang = siteLang;
+      store.set({ siteLang }); // lets the popup follow the site in auto mode
+    }
+    I18n.setLang(I18n.resolve(state.settings.language, siteLang, navigator.language));
+  }
+
+  function languageChanged() {
+    const before = I18n.lang;
+    applyLanguage();
+    return I18n.lang !== before;
+  }
+
   // ---------- computation ----------
   function summaryOf(r) {
     return {
@@ -73,6 +105,7 @@
   }
 
   function recompute() {
+    applyLanguage();
     if (!state.validations) return;
     state.result = G.computeGpa(state.validations, state.profile, state.settings);
     store.set({ summary: summaryOf(state.result) });
@@ -107,6 +140,11 @@
   store.get(['settings']).then((v) => {
     state.settings = { ...G.DEFAULT_SETTINGS, ...(v.settings || {}) };
     recompute();
+  });
+
+  // Language changed in another my.epitech.eu tab.
+  window.addEventListener('storage', (e) => {
+    if (e.key === SITE_LANG_KEY && languageChanged()) recompute();
   });
 
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && state.panelOpen) closePanel(); });

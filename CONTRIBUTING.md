@@ -137,7 +137,8 @@ These rules are not negotiable, because users' trust depends on them:
 - Classic scripts as IIFEs with `'use strict'` (no ES modules in content scripts, see
   [ARCHITECTURE.md](ARCHITECTURE.md#design-decisions)).
 - 2-space indentation, single quotes, semicolons.
-- Code comments in English; user-facing text in French (the site is in French).
+- Code comments in English. User-facing text is never written in the UI code: add a key to both the
+  `fr` and `en` dictionaries of `src/lib/i18n.js` and display it with `t('key')`.
 - One function = one responsibility; calculation stays in `lib/gpa.js`, display in `content/ui/`.
 - New content script file: add it at the right place in the `js` list of `manifest.json`.
 

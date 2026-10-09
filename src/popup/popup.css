@@ -34,6 +34,7 @@ select { background: var(--panel); color: var(--text); border: 1px solid var(--b
 select:focus, input:focus-visible, button:focus-visible { outline: 1px solid var(--green); outline-offset: 1px; }
 .check { display: flex; gap: 8px; align-items: center; margin-top: 12px; cursor: pointer; }
 .check input { accent-color: var(--green); }
+.language { margin-top: 16px; }
 footer { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
 button { background: none; color: var(--text); border: 1px solid var(--border); padding: 6px 10px; cursor: pointer;
   font: 10px var(--mono); letter-spacing: .8px; text-transform: uppercase; align-self: flex-start; }

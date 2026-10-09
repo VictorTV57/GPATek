@@ -1,10 +1,15 @@
-// GPATek — module → display text (badge label, tone, tooltip).
+// GPATek — module → display text (badge label, tone, tooltip), in the current language.
 (() => {
   'use strict';
   const UI = (globalThis.GpaTekUI ||= {});
   const G = globalThis.GpaTek;
+  const I18n = globalThis.GpaTekI18n;
+  const { t } = I18n;
 
   const isPending = (m) => !m.isOfficial && !m.acquired;
+
+  // Module or skill title in the current language (the API gives `title` in English, `titleFr` in French).
+  UI.titleOf = (x) => (I18n.lang === 'en' ? x.titleEn || x.title : x.title || x.titleEn);
 
   UI.toneFor = function toneFor(m) {
     if (isPending(m)) return 'tone-pending';
@@ -16,21 +21,21 @@
   };
 
   UI.badgeText = function badgeText(m, mode) {
-    if (isPending(m)) return `En cours · ${Math.round(m.averageScore)} XP`;
+    if (isPending(m)) return t('inProgress', { xp: Math.round(m.averageScore) });
     const prefix = m.isOfficial ? '' : '≈ ';
-    if (mode === 'linear' && !m.isOfficial) return `${prefix}${G.formatPoints(m.points)} / 4`;
-    return `${prefix}${m.letter} · ${G.formatPoints(m.points)}`;
+    if (mode === 'linear' && !m.isOfficial) return `${prefix}${I18n.points(m.points)} / 4`;
+    return `${prefix}${m.letter} · ${I18n.points(m.points)}`;
   };
 
   UI.tooltipFor = function tooltipFor(m) {
     const lines = [
-      `GPATek — ${m.isOfficial ? 'note officielle' : 'estimation non officielle'}`,
-      `Moyenne XP : ${Math.round(m.averageScore)} / ${G.XP_MAX}`,
-      `Points : ${G.formatPoints(m.points)} × ${m.credits} crédit${m.credits > 1 ? 's' : ''}`,
+      `GPATek — ${t(m.isOfficial ? 'officialGrade' : 'unofficialEstimate')}`,
+      t('averageXp', { avg: Math.round(m.averageScore), max: G.XP_MAX }),
+      t('pointsTimesCredits', { points: I18n.points(m.points), credits: m.credits }),
       '',
-      ...m.outcomes.map((o) => `${o.isMaxLevel ? 'MAX' : 'LV' + o.level} · ${o.score} XP — ${o.title}`),
+      ...m.outcomes.map((o) => `${o.isMaxLevel ? 'MAX' : 'LV' + o.level} · ${o.score} XP — ${UI.titleOf(o)}`),
     ];
-    if (isPending(m)) lines.splice(3, 0, `Crédits obtenus à partir de ${G.XP_FOR_CREDITS} XP de moyenne`);
+    if (isPending(m)) lines.splice(3, 0, t('creditsThreshold', { xp: G.XP_FOR_CREDITS }));
     return lines.join('\n');
   };
 })();

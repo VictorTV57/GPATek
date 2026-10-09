@@ -44,7 +44,9 @@ signed through AMO. After changing the code: click **Reload** on the add-on in `
   open the per-unit breakdown.
 - A **badge** next to the credits of each unit: `≈ A · 4,00`, or `En cours · 23 XP` while the unit is
   under 100 XP. Hover it to see the XP of each skill.
-- The extension **popup**: summary, calculation mode, button to clear stored data.
+- The extension **popup**: summary, calculation mode, language, button to clear stored data.
+- **French or English**: the extension follows the language of my.epitech.eu (Settings → Language) and
+  switches as soon as you change it there. You can also force a language in the popup.
 
 ## Calculation rules
 
@@ -60,6 +62,8 @@ signed through AMO. After changing the code: click **Reload** on the add-on in `
 
 - The extension only reads the responses of `/api/evaluations/validations/me` and `/api/students/profile`
   that the page already receives. It sends no request and never reads or stores any token.
+- To follow the site language, it reads a single key of the site's local storage, `i18nextLng`
+  (`fr` or `en`), and nothing else.
 - Only your settings and the latest summary are kept, in the browser's local storage.
 - Permissions: `storage` only, scripts restricted to `https://my.epitech.eu/*`.
 
@@ -71,6 +75,7 @@ src/                      Extension (folder to load in the browser)
 ├── icons/
 ├── lib/
 │   ├── gpa.js            Pure calculation (no DOM, no network), tested with Node
+│   ├── i18n.js           French and English text, language detection, tested with Node
 │   └── storage.js        chrome.storage.local access, shared by content and popup
 ├── content/
 │   ├── inject.js         Page world: copies the API responses it receives
@@ -83,7 +88,7 @@ src/                      Extension (folder to load in the browser)
 │       ├── stat.js       "GPA estimé" column in the header
 │       └── panel.js      Per-unit detail panel
 └── popup/                Popup: summary and settings
-tests/                    Calculation tests (node:test)
+tests/                    Calculation and translation tests (node:test)
 scripts/pack.ps1          Builds dist/gpa-tek-<version>-{chromium,firefox}.zip
 ```
 

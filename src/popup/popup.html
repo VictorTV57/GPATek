@@ -15,39 +15,48 @@
   </header>
 
   <section class="hero">
-    <span class="label">GPA estimé</span>
+    <span class="label" data-i18n="estimatedGpa">GPA estimé</span>
     <div class="big"><span id="est">—</span><small>/4</small></div>
     <div class="bar"><i id="bar"></i></div>
   </section>
 
   <section class="facts">
     <div><b id="off">—</b><span id="offLabel">Officiel</span></div>
-    <div><b id="added">—</b><span>Crédits estimés</span></div>
-    <div><b id="pess">—</b><span>Si tout finit ainsi</span></div>
+    <div><b id="added">—</b><span data-i18n="estimatedCredits">Crédits estimés</span></div>
+    <div><b id="pess">—</b><span data-i18n="ifItEnds">Si tout finit ainsi</span></div>
   </section>
 
   <hr>
 
   <section class="settings">
     <label class="field">
-      <span class="label">Mode de calcul</span>
+      <span class="label" data-i18n="calcMode">Mode de calcul</span>
       <select id="mode">
-        <option value="letters">Lettres — 1 point par 100 XP (A ≥ 400)</option>
-        <option value="linear">Linéaire — 4 × XP / 500</option>
+        <option value="letters" data-i18n="modeLettersLong">Lettres — 1 point par 100 XP (A ≥ 400)</option>
+        <option value="linear" data-i18n="modeLinearLong">Linéaire — 4 × XP / 500</option>
       </select>
     </label>
     <label class="check">
       <input type="checkbox" id="countInProgress">
-      <span>Compter les UE sous 100 XP comme un échec</span>
+      <span data-i18n="countInProgress">Compter les UE sous 100 XP comme un échec</span>
+    </label>
+    <label class="field language">
+      <span class="label" data-i18n="language">Langue</span>
+      <select id="language">
+        <option value="auto" data-i18n="languageAuto">Auto — langue du site</option>
+        <option value="fr" lang="fr">Français</option>
+        <option value="en" lang="en">English</option>
+      </select>
     </label>
   </section>
 
   <footer>
-    <button id="clear" type="button">Effacer mes données</button>
-    <span class="note">Estimation non officielle · non affilié à Epitech</span>
+    <button id="clear" type="button" data-i18n="clearData">Effacer mes données</button>
+    <span class="note" data-i18n="disclaimer">Estimation non officielle · non affilié à Epitech</span>
   </footer>
 
   <script src="../lib/gpa.js"></script>
+  <script src="../lib/i18n.js"></script>
   <script src="../lib/storage.js"></script>
   <script src="popup.js"></script>
 </body>

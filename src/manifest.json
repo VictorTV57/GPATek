@@ -28,6 +28,7 @@
       "matches": ["https://my.epitech.eu/*"],
       "js": [
         "lib/gpa.js",
+        "lib/i18n.js",
         "lib/storage.js",
         "content/ui/styles.js",
         "content/ui/dom.js",
