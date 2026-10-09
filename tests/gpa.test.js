@@ -56,7 +56,19 @@ test('computeGpa: officially graded modules are not counted twice', () => {
   assert.equal(r.estimatedGpa, (3.5 * 16 + 3 * 4) / 20);
 });
 
-test('formatPoints uses a French decimal comma', () => {
+test('formatPoints uses a French decimal comma by default', () => {
   assert.equal(G.formatPoints(3.456), '3,46');
+  assert.equal(G.formatPoints(3.456, 2, '.'), '3.46');
   assert.equal(G.formatPoints(null), '—');
+});
+
+test('evaluateModule keeps French and English titles', () => {
+  const m = G.evaluateModule(block({
+    title: 'Unit', titleFr: 'Unité',
+    learningOutcomes: [{ title: 'Skill', titleFr: 'Compétence', score: 50, level: 1 }],
+  }));
+  assert.equal(m.title, 'Unité');
+  assert.equal(m.titleEn, 'Unit');
+  assert.equal(m.outcomes[0].title, 'Compétence');
+  assert.equal(m.outcomes[0].titleEn, 'Skill');
 });
