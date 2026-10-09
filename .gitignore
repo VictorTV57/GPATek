@@ -1,0 +1,18 @@
+# Paquets générés (à publier en release, pas dans le dépôt)
+dist/
+*.zip
+*.crx
+# Clé privée générée par Chrome à l'empaquetage : ne jamais la committer
+keys/
+*.pem
+
+# Dépendances Node
+node_modules/
+
+# Fichiers système et éditeurs
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
