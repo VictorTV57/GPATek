@@ -1,0 +1,80 @@
+name: 🐛 Bug report
+description: Something does not work or does not show up.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem!
+        ⚠️ **Do not paste any token, cookie or personal data.** Anonymise your screenshots.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens?
+      description: Describe the problem in a few sentences.
+      placeholder: The badge does not appear next to the semester 3 units.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open my.epitech.eu
+        2. Go to Détails académiques → Compétences
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where?
+      multiple: true
+      options:
+        - Unit badges
+        - "\"GPA estimé\" column"
+        - Detail panel
+        - Extension popup
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      description: Shown on `chrome://extensions`.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 141, Edge 140…
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors (optional)
+      description: F12 → Console, filter on "GPATek".
+      render: text
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (optional, anonymised)

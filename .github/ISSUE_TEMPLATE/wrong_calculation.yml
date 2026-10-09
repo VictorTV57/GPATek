@@ -1,0 +1,62 @@
+name: 🧮 Wrong calculation
+description: The estimated GPA or a unit's grade is not what it should be.
+title: "[Calculation] "
+labels: ["calculation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The calculation rules are described in the [README](https://github.com/VictorTV57/GPATek/blob/main/README.md).
+        ⚠️ **Only send numbers** (credits, XP, grades), never your login or your full API response.
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Calculation mode
+      options:
+        - Letters (default)
+        - Linear
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: options
+    attributes:
+      label: Settings
+      options:
+        - label: "\"Count units under 100 XP as a fail\" is checked"
+
+  - type: input
+    id: shown
+    attributes:
+      label: Value shown by GPATek
+      placeholder: "3.42"
+    validations:
+      required: true
+
+  - type: input
+    id: expected
+    attributes:
+      label: Expected value
+      placeholder: "3.50"
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why do you expect this value?
+      description: Official grade received, rule given by a referent, manual calculation…
+    validations:
+      required: true
+
+  - type: textarea
+    id: data
+    attributes:
+      label: Anonymised data
+      description: Official GPA, acquired credits, then for each unit involved its credits, average XP and official grade if any.
+      render: text
+      placeholder: |
+        Official GPA: 3.20 — acquired credits: 40
+        Unit A: 4 credits, 320 XP, no grade
+        Unit B: 3 credits, 80 XP, no grade

@@ -1,0 +1,39 @@
+name: 💡 Feature request
+description: Suggest a feature or an improvement, or ask a question.
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What need or problem?
+      placeholder: I'd like to know how much XP I'm missing to reach a B on a unit.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How do you picture the feature? A quick mock-up helps a lot.
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Project principles
+      description: See [CONTRIBUTING.md](https://github.com/VictorTV57/GPATek/blob/main/CONTRIBUTING.md#project-principles).
+      options:
+        - label: The idea needs no network request, no token access and no extra permission (or I explain why above).
+          required: true
+
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I'm willing to work on it myself.
