@@ -8,8 +8,9 @@
 
   const isPending = (m) => !m.isOfficial && !m.acquired;
 
-  // Module or skill title in the current language (the API gives `title` in English, `titleFr` in French).
-  UI.titleOf = (x) => (I18n.lang === 'en' ? x.titleEn || x.title : x.title || x.titleEn);
+  // Module or skill title: the API only has `titleFr` (French) and `title` (English), so every language
+  // other than French gets the English one.
+  UI.titleOf = (x) => (I18n.lang === 'fr' ? x.title || x.titleEn : x.titleEn || x.title);
 
   UI.toneFor = function toneFor(m) {
     if (isPending(m)) return 'tone-pending';
@@ -31,7 +32,7 @@
     const lines = [
       `GPATek — ${t(m.isOfficial ? 'officialGrade' : 'unofficialEstimate')}`,
       t('averageXp', { avg: Math.round(m.averageScore), max: G.XP_MAX }),
-      t('pointsTimesCredits', { points: I18n.points(m.points), credits: m.credits }),
+      t('pointsTimesCredits', { points: I18n.points(m.points), count: m.credits }),
       '',
       ...m.outcomes.map((o) => `${o.isMaxLevel ? 'MAX' : 'LV' + o.level} · ${o.score} XP — ${UI.titleOf(o)}`),
     ];

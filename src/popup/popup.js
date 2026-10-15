@@ -32,11 +32,26 @@
     $('mode').value = s.mode;
     $('countInProgress').checked = Boolean(s.countInProgress);
     $('language').value = s.language;
+    if ($('language').selectedIndex < 0) $('language').value = 'auto'; // language no longer available
+  }
+
+  function fillLanguages() {
+    const select = $('language');
+    select.querySelectorAll('option:not([value="auto"])').forEach((o) => o.remove());
+    for (const { code, name } of I18n.languages()) {
+      const option = document.createElement('option');
+      option.value = code;
+      option.lang = code;
+      option.textContent = name;
+      select.append(option);
+    }
   }
 
   // Auto mode: the language last seen on my.epitech.eu, else the browser's.
   function render() {
     I18n.setLang(I18n.resolve(state.settings.language, state.siteLang, navigator.language));
+    // Community translation not loaded yet: English meanwhile, then redraw once it is.
+    if (!I18n.hasStrings(I18n.lang)) I18n.loadStrings(I18n.lang).then(render);
     document.documentElement.lang = I18n.lang;
     document.querySelectorAll('[data-i18n]').forEach((n) => { n.textContent = t(n.dataset.i18n); });
     showSettings(state.settings);
@@ -49,7 +64,8 @@
     render();
   }
 
-  store.get(['summary', 'settings', 'siteLang']).then((v) => {
+  Promise.all([store.get(['summary', 'settings', 'siteLang']), I18n.loadLanguageList()]).then(([v]) => {
+    fillLanguages();
     state.summary = v.summary || null;
     state.settings = { ...G.DEFAULT_SETTINGS, ...(v.settings || {}) };
     state.siteLang = v.siteLang || null;

@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "test": "node --test",
-    "pack": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/pack.ps1"
+    "pack": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/pack.ps1",
+    "locale": "node scripts/new-locale.js"
   }
 }

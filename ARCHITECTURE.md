@@ -64,20 +64,36 @@ Pure functions, no DOM, no network, exposed on `globalThis.GpaTek` (browser) and
 
 ### `src/lib/i18n.js` — languages
 
-French and English dictionaries, exposed on `globalThis.GpaTekI18n` (and `module.exports` for the
-tests). `t(key, vars)` returns the text in the current language and fills `{placeholders}`;
-`points(value)` formats GPA points with the right decimal separator (`3,25` / `3.25`).
+All user-facing text, exposed on `globalThis.GpaTekI18n` (and `module.exports` for the tests).
+`t(key, vars)` returns the text in the current language and fills `{placeholders}`; with a numeric
+`count`, it picks the plural form of the language (`key_one`, `key_few`, `key_other`…, through
+`Intl.PluralRules`). `points(value)` formats GPA points with the decimal separator of the language
+(`3,25` / `3.25`, through `Intl.NumberFormat`).
+
+**Two kinds of languages:**
+
+- **Built in**: French and English, written in `i18n.js`. English is the reference: every key exists
+  there, and it is the fallback for a key missing from a translation.
+- **Community translations**: `src/locales/index.json` lists them (`{ "es": "Español" }`) and
+  `src/locales/<code>.json` holds the text. They are packaged in the extension and read with
+  `fetch(chrome.runtime.getURL(…))`, which never leaves the browser: `loadLanguageList()` once, then
+  `loadStrings(code)` the first time a language is used, while the text shows in English.
+  `addStrings()` keeps only known keys (including any plural form of them) with text values, so a
+  faulty file cannot break the display. `tests/locales.test.js` checks every file, and
+  `npm run locale -- <code> <name>` starts a new one (see CONTRIBUTING.md).
 
 The language is chosen by `resolve(setting, ...detected)`: a language forced in the popup wins,
-otherwise (`auto`) the first known language among the detected ones, otherwise French.
+otherwise (`auto`) the first known language among the detected ones, otherwise French. The site only
+offers French and English, so a community language is only used when picked in the popup or, if the
+site's language is unknown, when it is the browser language.
 
 - **Page**: my.epitech.eu uses i18next, which saves the language picked in its settings in
   `localStorage.i18nextLng` (`fr` / `en`). `main.js` reads **only that key**, then falls back to the
   browser language. (`<html lang>` cannot be used: the site leaves it at `en` whatever the language.)
   Switching the language redraws the site's page, which triggers our render loop: `render()` checks
   the language again and redraws the badges, the column and the panel without a reload. A `storage`
-  event covers a change made in another tab. Module and skill titles use the API's `title` (English)
-  or `titleFr` (French).
+  event covers a change made in another tab. Module and skill titles use the API's `titleFr` in
+  French and its `title` (English) in every other language: the API has no other.
 - **Popup**: it cannot see the page, so the content script stores the last site language
   (`siteLang`); the popup uses it in auto mode, then falls back to the browser language.
 
@@ -88,7 +104,7 @@ when `chrome` is missing (previews, tests). Keys in use:
 
 | Key | Written by | Read by | Content |
 | --- | --- | --- | --- |
-| `settings` | popup | content, popup | `{ mode: 'letters' \| 'linear', countInProgress: boolean, language: 'auto' \| 'fr' \| 'en' }` |
+| `settings` | popup | content, popup | `{ mode: 'letters' \| 'linear', countInProgress: boolean, language: 'auto' \| language code }` |
 | `summary` | content | popup | Latest result (GPA, credits, modules, `updatedAt`) |
 | `siteLang` | content | popup | Last language seen on my.epitech.eu: `'fr'` or `'en'` |
 
@@ -144,7 +160,9 @@ its labels, badges silently disappear (rendering fails quietly, with a `console.
 
 **No service worker.** There is nothing to do in the background, so there is no extra surface.
 
-**Minimal permissions.** `storage` only, scripts restricted to `https://my.epitech.eu/*`.
+**Minimal permissions.** `storage` only, scripts restricted to `https://my.epitech.eu/*`. The only
+`web_accessible_resources` are `locales/*.json`, for my.epitech.eu only: Chrome requires it for a
+content script to read a file of its own extension. These files hold public interface text.
 
 ## Adding a feature: where to look
 
@@ -156,6 +174,7 @@ its labels, badges silently disappear (rendering fails quietly, with a `console.
 | Show a new element in the page | New file in `content/ui/`, add it to `manifest.json`, call it from `render()` |
 | Change the look | `content/ui/styles.js` (page) or `popup/popup.css` |
 | Add or change a text | `lib/i18n.js` (both `fr` and `en`), then `t('key')` in the UI (`data-i18n="key"` in `popup.html`) |
+| Add a language | `npm run locale -- <code> <name>`, then translate `locales/<code>.json` (see CONTRIBUTING.md) |
 
 ## Debugging
 
