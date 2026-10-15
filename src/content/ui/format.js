@@ -22,21 +22,34 @@
   };
 
   UI.badgeText = function badgeText(m, mode) {
-    if (isPending(m)) return t('inProgress', { xp: Math.round(m.averageScore) });
+    if (isPending(m)) return t('inProgress', { xp: Math.floor(m.averageScore) });
     const prefix = m.isOfficial ? '' : '≈ ';
     if (mode === 'linear' && !m.isOfficial) return `${prefix}${I18n.points(m.points)} / 4`;
     return `${prefix}${m.letter} · ${I18n.points(m.points)}`;
   };
 
+  // Next step of a module ("↑ B −37 XP"), or null when there is none (official grade, A, linear mode).
+  UI.nextBadgeText = function nextBadgeText(m) {
+    if (!m.next) return null;
+    return t(m.next.credits ? 'nextBadgeCredits' : 'nextBadge', { letter: m.next.letter, xp: m.next.missingXp });
+  };
+
+  // "B at a 300 XP average: 37 XP to go, ≈ 148 XP over 4 skills"
+  UI.nextDetail = function nextDetail(m) {
+    if (!m.next) return null;
+    const { letter, targetXp, missingXp, totalXp, skills } = m.next;
+    return t(m.next.credits ? 'nextCredits' : 'nextLetter', { letter, target: targetXp, xp: missingXp, total: totalXp, count: skills });
+  };
+
   UI.tooltipFor = function tooltipFor(m) {
     const lines = [
       `GPATek — ${t(m.isOfficial ? 'officialGrade' : 'unofficialEstimate')}`,
-      t('averageXp', { avg: Math.round(m.averageScore), max: G.XP_MAX }),
+      t('averageXp', { avg: Math.floor(m.averageScore), max: G.XP_MAX }),
       t('pointsTimesCredits', { points: I18n.points(m.points), count: m.credits }),
+      UI.nextDetail(m),
       '',
       ...m.outcomes.map((o) => `${o.isMaxLevel ? 'MAX' : 'LV' + o.level} · ${o.score} XP — ${UI.titleOf(o)}`),
     ];
-    if (isPending(m)) lines.splice(3, 0, t('creditsThreshold', { xp: G.XP_FOR_CREDITS }));
-    return lines.join('\n');
+    return lines.filter((line) => line !== null).join('\n');
   };
 })();

@@ -11,7 +11,7 @@
 
   function moduleRow(m, mode) {
     const pct = Math.min(100, (m.averageScore / G.XP_MAX) * 100);
-    const sub = t('rowSub', { avg: Math.round(m.averageScore), max: G.XP_MAX, validated: m.validatedCount, total: m.totalCount });
+    const sub = t('rowSub', { avg: Math.floor(m.averageScore), max: G.XP_MAX, validated: m.validatedCount, total: m.totalCount });
     return el('div', { class: 'row' }, [
       el('div', { class: 'row-top' }, [
         el('div', { class: 'row-title', text: UI.titleOf(m) }),
@@ -20,6 +20,7 @@
       ]),
       el('div', { class: 'bar' }, [el('i', { style: `width:${pct}%` })]),
       el('div', { class: 'row-sub', text: m.isOfficial ? `${sub} · ${t('officialGrade')}` : sub }),
+      m.next ? el('div', { class: 'row-next', text: `↑ ${UI.nextDetail(m)}` }) : null,
     ]);
   }
 

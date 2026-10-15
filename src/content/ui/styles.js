@@ -18,6 +18,8 @@
     .tone-low   { --c-fg: #c9c9c9; --c-border: rgba(186, 190, 195, .6); --c-bg: rgba(134, 142, 150, .14); }
     .tone-fail  { --c-fg: #f58b8b; --c-border: rgba(240, 90, 90, .6); --c-bg: rgba(240, 90, 90, .12); }
     .tone-pending { --c-fg: #9a9a9a; --c-border: rgba(130, 130, 130, .5); --c-bg: transparent; border-style: dashed; }
+    .badge.next { --c-fg: #9a9a9a; --c-border: #3a3a3a; --c-bg: transparent; }
+    .badge + .badge { margin-left: 6px; }
 
     /* ---------- header stat ---------- */
     .stat { display: flex; flex-direction: column; gap: 4px; cursor: pointer; position: relative; }
@@ -54,6 +56,7 @@
     .row-meta { font: 11px "Space Mono", monospace; color: #9a9a9a; white-space: nowrap; }
     .row .bar { margin: 6px 0 0; }
     .row-sub { font: 11px "Space Mono", monospace; color: #828282; margin-top: 4px; }
+    .row-next { font: 11px "Space Mono", monospace; color: #6fd69a; margin-top: 2px; }
     .note { font: 11px "Space Mono", monospace; color: #828282; text-transform: uppercase; letter-spacing: .8px; margin-top: 20px; }
     .muted { color: #9a9a9a; font-size: 13px; }
   `;
