@@ -44,6 +44,10 @@ signed through AMO. After changing the code: click **Reload** on the add-on in `
   open the per-unit breakdown.
 - A **badge** next to the credits of each unit: `≈ A · 4,00`, or `En cours · 23 XP` while the unit is
   under 100 XP. Hover it to see the XP of each skill.
+- **XP to the next step**, right after the badge: `↑ B −37 XP` means 37 more XP on average gives a B,
+  `↑ crédits −77 XP` that 77 more give the credits. The tooltip and the detail panel also give the
+  total to earn over the unit's skills (`≈ 148 XP sur 4 compétences`). Nothing is shown once the grade
+  is official or the unit is at A.
 - The extension **popup**: summary, calculation mode, language, button to clear stored data.
 - **French or English**: the extension follows the language of my.epitech.eu (Settings → Language) and
   switches as soon as you change it there. You can also force a language in the popup.
@@ -87,7 +91,7 @@ src/                      Extension (folder to load in the browser)
 │       ├── styles.js     Shadow DOM CSS
 │       ├── dom.js        DOM helpers (element builder, text lookup)
 │       ├── format.js     Badge labels, colours and tooltips
-│       ├── badges.js     Badge next to each unit's credits
+│       ├── badges.js     Badge (and next step) next to each unit's credits
 │       ├── stat.js       "GPA estimé" column in the header
 │       └── panel.js      Per-unit detail panel
 └── popup/                Popup: summary and settings

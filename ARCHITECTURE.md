@@ -55,7 +55,11 @@ Pure functions, no DOM, no network, exposed on `globalThis.GpaTek` (browser) and
 `module.exports` (Node, for the tests).
 
 - `evaluateModule(block, settings)` turns an API block (one teaching unit, "UE") into a module:
-  points, letter, status (`official` / `acquired` / `in_progress`).
+  points, letter, status (`official` / `acquired` / `in_progress`) and `next`.
+- `nextStep(averageScore, mode, skillCount)` returns the next average XP that earns something — the
+  credits at 100 XP, then each letter up to A at 400 in letters mode — with the XP missing on average
+  and roughly in total over the unit's skills, or `null` (official grade, A reached, linear mode once
+  the credits are earned).
 - `computeGpa(validations, profile, settings)` returns the estimated GPA, the "if everything ends like
   this" GPA, the credits taken into account and the list of modules.
 - Constants: `XP_FOR_CREDITS = 100`, `XP_MAX = 500`, `DEFAULT_SETTINGS`.
