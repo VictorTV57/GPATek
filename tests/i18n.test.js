@@ -95,3 +95,13 @@ test('loading outside the extension resolves without throwing', async () => {
   await I18n.loadStrings('xx');
   assert.equal(I18n.hasStrings('xx'), true);
 });
+
+test('next step texts, singular and plural', () => {
+  I18n.setLang('en');
+  assert.equal(I18n.t('nextBadge', { letter: 'B', xp: 37 }), '↑ B −37 XP');
+  assert.equal(I18n.t('nextLetter', { letter: 'B', target: 300, xp: 37, total: 148, count: 4 }),
+    'B at a 300 XP average: 37 XP to go, ≈ 148 XP over 4 skills');
+  I18n.setLang('fr');
+  assert.equal(I18n.t('nextCredits', { target: 100, xp: 77, total: 77, count: 1 }),
+    'Crédits à 100 XP de moyenne : encore 77 XP, soit ≈ 77 XP sur 1 compétence');
+});
