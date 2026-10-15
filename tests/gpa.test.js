@@ -72,3 +72,33 @@ test('evaluateModule keeps French and English titles', () => {
   assert.equal(m.outcomes[0].title, 'Compétence');
   assert.equal(m.outcomes[0].titleEn, 'Skill');
 });
+
+test('nextStep: credits first, then each letter up to A', () => {
+  assert.deepEqual(G.nextStep(23, 'letters', 4), { targetXp: 100, letter: 'D', credits: true, missingXp: 77, totalXp: 308, skills: 4 });
+  assert.equal(G.nextStep(100, 'letters').targetXp, 200);
+  assert.equal(G.nextStep(100, 'letters').letter, 'C');
+  assert.equal(G.nextStep(263, 'letters', 4).letter, 'B');
+  assert.equal(G.nextStep(263, 'letters', 4).missingXp, 37);
+  assert.equal(G.nextStep(263, 'letters', 4).totalXp, 148);
+  assert.equal(G.nextStep(399.5, 'letters').missingXp, 1);
+  assert.equal(G.nextStep(400, 'letters'), null);
+  assert.equal(G.nextStep(520, 'letters'), null);
+});
+
+test('nextStep: linear mode only has the credits step', () => {
+  assert.equal(G.nextStep(50, 'linear').targetXp, 100);
+  assert.equal(G.nextStep(50, 'linear').credits, true);
+  assert.equal(G.nextStep(150, 'linear'), null);
+});
+
+test('nextStep: at least one skill, so the total is never zero', () => {
+  assert.equal(G.nextStep(50, 'letters', 0).skills, 1);
+  assert.equal(G.nextStep(50, 'letters', 0).totalXp, 50);
+});
+
+test('evaluateModule: next step from the skills, none once officially graded', () => {
+  const skills = [{ score: 250 }, { score: 270 }, { score: 260 }, { score: 272 }];
+  assert.equal(G.evaluateModule(block({ averageScore: 263, learningOutcomes: skills })).next.totalXp, 148);
+  assert.equal(G.evaluateModule(block({ averageScore: 263, totalCount: 5 })).next.skills, 5);
+  assert.equal(G.evaluateModule(block({ averageScore: 263, grade: 'B' })).next, null);
+});
