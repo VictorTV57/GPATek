@@ -47,6 +47,8 @@ signed through AMO. After changing the code: click **Reload** on the add-on in `
 - The extension **popup**: summary, calculation mode, language, button to clear stored data.
 - **French or English**: the extension follows the language of my.epitech.eu (Settings → Language) and
   switches as soon as you change it there. You can also force a language in the popup.
+- **Other languages**: translated by the community. Yours is missing?
+  [Translate GPATek](CONTRIBUTING.md#translating-gpatek): about thirty sentences, no code needed.
 
 ## Calculation rules
 
@@ -77,6 +79,7 @@ src/                      Extension (folder to load in the browser)
 │   ├── gpa.js            Pure calculation (no DOM, no network), tested with Node
 │   ├── i18n.js           French and English text, language detection, tested with Node
 │   └── storage.js        chrome.storage.local access, shared by content and popup
+├── locales/              Community translations: index.json (list) + <code>.json
 ├── content/
 │   ├── inject.js         Page world: copies the API responses it receives
 │   ├── main.js           Entry point: state, calculation, render loop
@@ -90,6 +93,7 @@ src/                      Extension (folder to load in the browser)
 └── popup/                Popup: summary and settings
 tests/                    Calculation and translation tests (node:test)
 scripts/pack.ps1          Builds dist/gpa-tek-<version>-{chromium,firefox}.zip
+scripts/new-locale.js     Starts a community translation (npm run locale)
 ```
 
 Content scripts cannot be ES modules: each file in `content/ui/` is a classic script that registers
@@ -99,8 +103,9 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
 ## Development
 
 ```sh
-npm test       # calculation tests (Node ≥ 18, no dependencies)
-npm run pack   # zip src/ into dist/: one package for Chromium, one for Firefox
+npm test                       # calculation and translation tests (Node ≥ 18, no dependencies)
+npm run pack                   # zip src/ into dist/: one package for Chromium, one for Firefox
+npm run locale -- es Español   # start a translation: src/locales/es.json
 ```
 
 `dist/` (built packages) and `keys/` (private `.pem` key used to sign the `.crx`) are never committed.

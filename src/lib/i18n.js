@@ -1,10 +1,12 @@
-// GPATek — user-facing text in French and English, shared by the content scripts, the popup and the tests.
-// The language follows my.epitech.eu (<html lang>) unless the user picks one in the popup.
+// GPATek — user-facing text, shared by the content scripts, the popup and the tests.
+// French and English are built in. Other languages are community translations: src/locales/index.json
+// lists them ({ "es": "Español" }) and src/locales/<code>.json holds the text, loaded on demand.
+// A key missing from a translation is shown in English.
 (function (root) {
   'use strict';
 
-  const LANGS = ['fr', 'en'];
-  const FALLBACK = 'fr';
+  const FALLBACK = 'fr'; // when no language can be detected
+  const SOURCE = 'en';   // reference for translations, and fallback for missing keys
 
   const STRINGS = {
     fr: {
@@ -18,7 +20,8 @@
       officialGrade: 'note officielle',
       unofficialEstimate: 'estimation non officielle',
       averageXp: 'Moyenne XP : {avg} / {max}',
-      pointsTimesCredits: ({ points, credits }) => `Points : ${points} × ${credits} crédit${credits > 1 ? 's' : ''}`,
+      pointsTimesCredits_one: 'Points : {points} × {count} crédit',
+      pointsTimesCredits_other: 'Points : {points} × {count} crédits',
       creditsThreshold: 'Crédits obtenus à partir de {xp} XP de moyenne',
       statTitle: 'GPATek — cliquer pour le détail',
       panelLabel: 'Détail du GPA estimé',
@@ -50,7 +53,8 @@
       officialGrade: 'official grade',
       unofficialEstimate: 'unofficial estimate',
       averageXp: 'Average XP: {avg} / {max}',
-      pointsTimesCredits: ({ points, credits }) => `Points: ${points} × ${credits} credit${credits > 1 ? 's' : ''}`,
+      pointsTimesCredits_one: 'Points: {points} × {count} credit',
+      pointsTimesCredits_other: 'Points: {points} × {count} credits',
       creditsThreshold: 'Credits earned from a {xp} XP average',
       statTitle: 'GPATek — click for details',
       panelLabel: 'Estimated GPA breakdown',
@@ -73,15 +77,19 @@
     },
   };
 
+  // Language code → its own name, as shown in the popup. Extended by addLanguages().
+  const NAMES = { fr: 'Français', en: 'English' };
+  const CODE_RE = /^[a-z]{2,3}$/;
+
   let current = FALLBACK;
 
-  // 'en-GB', 'EN', 'fr_FR' → 'en' / 'fr'; anything else → null.
+  // 'en-GB', 'ES', 'fr_FR' → 'en' / 'es' / 'fr' when that language exists; anything else → null.
   function normalize(code) {
     const base = String(code || '').trim().toLowerCase().split(/[-_]/)[0];
-    return LANGS.includes(base) ? base : null;
+    return base in NAMES ? base : null;
   }
 
-  // setting: 'auto' | 'fr' | 'en'. In auto mode, the first known language among `detected` wins.
+  // setting: 'auto' or a language code. In auto mode, the first known language among `detected` wins.
   function resolve(setting, ...detected) {
     const forced = normalize(setting);
     if (forced) return forced;
@@ -92,27 +100,95 @@
     return FALLBACK;
   }
 
+  // Registers the languages listed in locales/index.json: { "es": "Español", … }.
+  function addLanguages(index) {
+    for (const [code, name] of Object.entries(index || {})) {
+      if (CODE_RE.test(code) && !(code in NAMES) && typeof name === 'string' && name.trim()) NAMES[code] = name.trim();
+    }
+  }
+
+  // English text a translation key corresponds to, or undefined for an unknown key.
+  // Plural keys may use any CLDR form (pointsTimesCredits_few…) even if English only has _one and _other.
+  function sourceText(key) {
+    if (key in STRINGS[SOURCE]) return STRINGS[SOURCE][key];
+    const plural = /^(.+)_(zero|one|two|few|many|other)$/.exec(key);
+    return plural ? STRINGS[SOURCE][`${plural[1]}_other`] : undefined;
+  }
+
+  // Registers a translation, keeping only the known keys with text values.
+  function addStrings(code, dict) {
+    const clean = {};
+    for (const [key, value] of Object.entries(dict || {})) {
+      if (sourceText(key) !== undefined && typeof value === 'string' && value.trim()) clean[key] = value;
+    }
+    if (!(code in STRINGS)) STRINGS[code] = clean;
+  }
+
+  function lookup(key) {
+    return STRINGS[current]?.[key] ?? STRINGS[SOURCE][key];
+  }
+
+  // Plurals: pass `count`, and the key gets the CLDR suffix of the language (_one, _few, _other…).
   function t(key, vars = {}) {
-    const entry = STRINGS[current][key] ?? STRINGS[FALLBACK][key] ?? key;
-    if (typeof entry === 'function') return entry(vars);
+    let entry;
+    if (typeof vars.count === 'number') {
+      const form = new Intl.PluralRules(current).select(vars.count);
+      entry = lookup(`${key}_${form}`) ?? lookup(`${key}_other`);
+    }
+    entry = entry ?? lookup(key) ?? key;
     return entry.replace(/\{(\w+)\}/g, (m, name) => (name in vars ? String(vars[name]) : m));
   }
 
   // GPA points with the decimal separator of the current language: "3,25" / "3.25".
   function points(value, digits = 2) {
-    return root.GpaTek.formatPoints(value, digits, current === 'en' ? '.' : ',');
+    const decimal = new Intl.NumberFormat(current).formatToParts(1.5).find((p) => p.type === 'decimal');
+    return root.GpaTek.formatPoints(value, digits, decimal ? decimal.value : '.');
+  }
+
+  // ---------- browser only: community translations, packaged in the extension ----------
+  // Tolerant: resolves to null without chrome.* (page previews) or when the file is missing or invalid.
+  function loadJson(path) {
+    try {
+      return fetch(root.chrome.runtime.getURL(path)).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    } catch (_) {
+      return Promise.resolve(null);
+    }
+  }
+
+  let languageList = null;
+  const pending = {};
+
+  // Resolves once locales/index.json is read (or failed to be).
+  function loadLanguageList() {
+    languageList ||= loadJson('locales/index.json').then(addLanguages);
+    return languageList;
+  }
+
+  // Resolves once the text of `lang` is available. A missing file leaves it empty: English is shown.
+  function loadStrings(lang) {
+    if (lang in STRINGS) return Promise.resolve();
+    pending[lang] ||= loadJson(`locales/${lang}.json`).then((dict) => addStrings(lang, dict));
+    return pending[lang];
   }
 
   const api = {
-    LANGS,
+    FALLBACK,
+    SOURCE,
     STRINGS,
     normalize,
     resolve,
+    addLanguages,
+    addStrings,
+    sourceText,
+    loadLanguageList,
+    loadStrings,
     t,
     points,
     setLang(lang) { current = normalize(lang) || FALLBACK; },
+    hasStrings(lang) { return lang in STRINGS; },
+    languages() { return Object.entries(NAMES).map(([code, name]) => ({ code, name })); },
     get lang() { return current; },
-    get locale() { return current === 'en' ? 'en-GB' : 'fr-FR'; },
+    get locale() { return { fr: 'fr-FR', en: 'en-GB' }[current] || current; },
   };
   root.GpaTekI18n = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

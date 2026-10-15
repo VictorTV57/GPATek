@@ -12,6 +12,8 @@ By taking part, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 3. Browse the [issues](https://github.com/VictorTV57/GPATek/issues), especially those labelled
    `good first issue`.
 
+You don't code? You can still [translate GPATek into your language](#translating-gpatek).
+
 ## Reporting a bug or suggesting an idea
 
 Open an [issue](https://github.com/VictorTV57/GPATek/issues/new/choose) using the matching template:
@@ -138,9 +140,54 @@ These rules are not negotiable, because users' trust depends on them:
   [ARCHITECTURE.md](ARCHITECTURE.md#design-decisions)).
 - 2-space indentation, single quotes, semicolons.
 - Code comments in English. User-facing text is never written in the UI code: add a key to both the
-  `fr` and `en` dictionaries of `src/lib/i18n.js` and display it with `t('key')`.
+  `fr` and `en` dictionaries of `src/lib/i18n.js` and display it with `t('key')`. Community
+  translations show it in English until they translate it: no need to edit `src/locales/`.
 - One function = one responsibility; calculation stays in `lib/gpa.js`, display in `content/ui/`.
 - New content script file: add it at the right place in the `js` list of `manifest.json`.
+
+## Translating GPATek
+
+French and English are built in. Every other language is a community translation: a JSON file in
+`src/locales/`, written by someone who speaks it. It is about thirty short sentences, and no
+JavaScript is needed.
+
+### Adding a language
+
+1. Set up the project ([Local setup](#local-setup)) and create a branch from `dev`, e.g.
+   `feat/spanish-translation`.
+2. Create the file, with the [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+   of the language and its name **in that language**:
+
+   ```sh
+   npm run locale -- es Español
+   ```
+
+   This creates `src/locales/es.json`, filled with the English text, and adds the language to
+   `src/locales/index.json`.
+3. Translate each value in `es.json`. Keep the keys as they are.
+4. Run `npm test`: it checks the file and lists the keys not translated yet.
+5. Load the extension, pick your language in the popup, and check the badges, the "Estimated GPA"
+   column, the detail panel and the popup.
+6. Commit (`feat(locales): add Spanish translation`) and open a pull request against `dev`.
+
+### Rules
+
+- **Placeholders** such as `{xp}`, `{count}` or `{semester}` are replaced by numbers or names: keep
+  them, spelled exactly the same. You may move them within the sentence.
+- **Plurals**: keys ending in `_one` and `_other` are the singular and plural forms. If your language
+  has more forms, add them with the suffixes of the
+  [CLDR plural rules](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html)
+  (`_zero`, `_two`, `_few`, `_many`), e.g. `pointsTimesCredits_few` in Polish or Russian.
+- **Untranslated key**: just leave it out. It is shown in English.
+- **Keep the Epitech terms** students see on my.epitech.eu: "GPA", "XP", "MAX". "UE" is the French
+  name of a teaching unit: use the word your campus uses.
+- Numbers (`3,25` / `3.25`) and dates follow your language automatically.
+
+### Updating a language
+
+When a new text is added to the extension, it appears in English in every community translation, and
+`npm test` lists it as not translated. Add the key to your file with its translation and open a pull
+request as above.
 
 ## Commit messages
 
@@ -181,6 +228,8 @@ The part of the project touched, in parentheses:
 | --- | --- |
 | `calc` | `src/lib/gpa.js` |
 | `storage` | `src/lib/storage.js` |
+| `i18n` | `src/lib/i18n.js` |
+| `locales` | `src/locales/*` (community translations) |
 | `inject` | `src/content/inject.js` |
 | `content` | `src/content/main.js` |
 | `ui` | `src/content/ui/*` |
