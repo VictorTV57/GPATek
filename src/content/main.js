@@ -81,6 +81,8 @@
       store.set({ siteLang }); // lets the popup follow the site in auto mode
     }
     I18n.setLang(I18n.resolve(state.settings.language, siteLang, navigator.language));
+    // Community translation not loaded yet: English meanwhile, then redraw once it is.
+    if (!I18n.hasStrings(I18n.lang)) I18n.loadStrings(I18n.lang).then(recompute);
   }
 
   function languageChanged() {
@@ -141,6 +143,9 @@
     state.settings = { ...G.DEFAULT_SETTINGS, ...(v.settings || {}) };
     recompute();
   });
+
+  // The language picked in the popup may be a community translation, known once the list is read.
+  I18n.loadLanguageList().then(recompute);
 
   // Language changed in another my.epitech.eu tab.
   window.addEventListener('storage', (e) => {
