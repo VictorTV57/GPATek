@@ -86,7 +86,10 @@
       enrolled: Boolean(block.hasOpportunity) || avg > 0 || isOfficial,
       validatedCount: Number(block.validatedCount) || 0,
       totalCount: Number(block.totalCount) || 0,
-      next: isOfficial ? null : nextStep(avg, s.mode, (block.learningOutcomes || []).length || block.totalCount),
+      // XP only rises while activities are still linked to the module (hasOpportunity):
+      // without any, its next step can't be reached this semester.
+      hasActivities: Boolean(block.hasOpportunity),
+      next: isOfficial || !block.hasOpportunity ? null : nextStep(avg, s.mode, (block.learningOutcomes || []).length || block.totalCount),
       outcomes: (block.learningOutcomes || []).map((o) => ({
         title: o.titleFr || o.title || '',
         titleEn: o.title || '',

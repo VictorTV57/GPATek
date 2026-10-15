@@ -21,6 +21,7 @@
       el('div', { class: 'bar' }, [el('i', { style: `width:${pct}%` })]),
       el('div', { class: 'row-sub', text: m.isOfficial ? `${sub} · ${t('officialGrade')}` : sub }),
       m.next ? el('div', { class: 'row-next', text: `↑ ${UI.nextDetail(m)}` }) : null,
+      !m.next && UI.nextDetail(m) ? el('div', { class: 'row-closed', text: UI.nextDetail(m) }) : null,
     ]);
   }
 

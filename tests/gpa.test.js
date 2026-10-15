@@ -102,3 +102,12 @@ test('evaluateModule: next step from the skills, none once officially graded', (
   assert.equal(G.evaluateModule(block({ averageScore: 263, totalCount: 5 })).next.skills, 5);
   assert.equal(G.evaluateModule(block({ averageScore: 263, grade: 'B' })).next, null);
 });
+
+test('evaluateModule: no next step once no activity is linked to the module', () => {
+  const closed = G.evaluateModule(block({ averageScore: 263, hasOpportunity: false }));
+  assert.equal(closed.next, null);
+  assert.equal(closed.hasActivities, false);
+  assert.equal(closed.enrolled, true);
+  assert.equal(closed.points, 2);
+  assert.equal(G.evaluateModule(block({ averageScore: 263 })).hasActivities, true);
+});

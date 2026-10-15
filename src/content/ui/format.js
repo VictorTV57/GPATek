@@ -34,9 +34,9 @@
     return t(m.next.credits ? 'nextBadgeCredits' : 'nextBadge', { letter: m.next.letter, xp: m.next.missingXp });
   };
 
-  // "B at a 300 XP average: 37 XP to go, ≈ 148 XP over 4 skills"
+  // "B at a 300 XP average: 37 XP to go, ≈ 148 XP over 4 skills", or why there is no step to reach.
   UI.nextDetail = function nextDetail(m) {
-    if (!m.next) return null;
+    if (!m.next) return !m.isOfficial && !m.hasActivities ? t('noActivities') : null;
     const { letter, targetXp, missingXp, totalXp, skills } = m.next;
     return t(m.next.credits ? 'nextCredits' : 'nextLetter', { letter, target: targetXp, xp: missingXp, total: totalXp, count: skills });
   };

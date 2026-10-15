@@ -47,7 +47,8 @@ signed through AMO. After changing the code: click **Reload** on the add-on in `
 - **XP to the next step**, right after the badge: `↑ B −37 XP` means 37 more XP on average gives a B,
   `↑ crédits −77 XP` that 77 more give the credits. The tooltip and the detail panel also give the
   total to earn over the unit's skills (`≈ 148 XP sur 4 compétences`). Nothing is shown once the grade
-  is official or the unit is at A.
+  is official or the unit is at A, nor when no activity is linked to the unit anymore: its XP can no
+  longer rise this semester (the panel says so).
 - The extension **popup**: summary, calculation mode, language, button to clear stored data.
 - **French or English**: the extension follows the language of my.epitech.eu (Settings → Language) and
   switches as soon as you change it there. You can also force a language in the popup.

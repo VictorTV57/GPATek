@@ -57,6 +57,7 @@
     .row .bar { margin: 6px 0 0; }
     .row-sub { font: 11px "Space Mono", monospace; color: #828282; margin-top: 4px; }
     .row-next { font: 11px "Space Mono", monospace; color: #6fd69a; margin-top: 2px; }
+    .row-closed { font: 11px "Space Mono", monospace; color: #828282; font-style: italic; margin-top: 2px; }
     .note { font: 11px "Space Mono", monospace; color: #828282; text-transform: uppercase; letter-spacing: .8px; margin-top: 20px; }
     .muted { color: #9a9a9a; font-size: 13px; }
   `;
