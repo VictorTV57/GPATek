@@ -1,4 +1,5 @@
-// GPATek — badge next to the credits of each module ("≈ A · 4,00", "En cours · 23 XP").
+// GPATek — badge next to the credits of each module ("≈ C · 2,00", "En cours · 23 XP"),
+// followed by the next step when there is one ("↑ B −37 XP").
 (() => {
   'use strict';
   const UI = (globalThis.GpaTekUI ||= {});
@@ -23,6 +24,8 @@
       host.style.display = 'inline-flex';
       host.title = UI.tooltipFor(m);
       root.append(UI.el('span', { class: `badge ${UI.toneFor(m)}`, text: UI.badgeText(m, result.settings.mode) }));
+      const next = UI.nextBadgeText(m);
+      if (next) root.append(UI.el('span', { class: 'badge next', text: next }));
       creditLeaf.parentElement.after(host);
     }
   };

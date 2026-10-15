@@ -39,6 +39,31 @@
     return Math.min(4, Math.floor(avg / XP_FOR_CREDITS));
   }
 
+  // Next step of the average XP that earns something, or null when there is none:
+  // the credits (100 XP, also D in letters mode), then each letter in letters mode, up to A (400).
+  // Linear mode has no steps once the credits are earned.
+  function nextStep(averageScore, mode, skillCount = 1) {
+    const avg = Math.max(0, Number(averageScore) || 0);
+    let targetXp;
+    if (avg < XP_FOR_CREDITS) targetXp = XP_FOR_CREDITS;
+    else if (mode === 'linear') return null;
+    else {
+      const points = Math.floor(avg / XP_FOR_CREDITS);
+      if (points >= LETTER_POINTS.A) return null;
+      targetXp = (points + 1) * XP_FOR_CREDITS;
+    }
+    const skills = Math.max(1, Number(skillCount) || 1);
+    return {
+      targetXp,
+      letter: letterFor(targetXp / XP_FOR_CREDITS),
+      credits: targetXp === XP_FOR_CREDITS, // reaching it earns the unit's credits
+      missingXp: Math.ceil(targetXp - avg),
+      // Average XP is spread over the skills: roughly this much XP to earn in total.
+      totalXp: Math.ceil((targetXp - avg) * skills),
+      skills,
+    };
+  }
+
   function evaluateModule(block, settings) {
     const s = { ...DEFAULT_SETTINGS, ...(settings || {}) };
     const avg = Math.max(0, Number(block.averageScore) || 0);
@@ -61,6 +86,10 @@
       enrolled: Boolean(block.hasOpportunity) || avg > 0 || isOfficial,
       validatedCount: Number(block.validatedCount) || 0,
       totalCount: Number(block.totalCount) || 0,
+      // XP only rises while activities are still linked to the module (hasOpportunity):
+      // without any, its next step can't be reached this semester.
+      hasActivities: Boolean(block.hasOpportunity),
+      next: isOfficial || !block.hasOpportunity ? null : nextStep(avg, s.mode, (block.learningOutcomes || []).length || block.totalCount),
       outcomes: (block.learningOutcomes || []).map((o) => ({
         title: o.titleFr || o.title || '',
         titleEn: o.title || '',
@@ -120,7 +149,7 @@
     return value.toFixed(digits).replace('.', decimal);
   }
 
-  const api = { DEFAULT_SETTINGS, XP_FOR_CREDITS, XP_MAX, letterFor, officialPoints, estimatePoints, evaluateModule, computeGpa, formatPoints };
+  const api = { DEFAULT_SETTINGS, XP_FOR_CREDITS, XP_MAX, letterFor, officialPoints, estimatePoints, nextStep, evaluateModule, computeGpa, formatPoints };
   root.GpaTek = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
